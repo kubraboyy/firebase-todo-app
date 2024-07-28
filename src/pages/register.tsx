@@ -23,21 +23,30 @@ const Register = () => {
     return () => unsubscribe();
   }, [router]);
 
+  const validateEmail = (email: string): boolean => {
+    const regex = /^[^\s@]+@[^\s@]+.[^\s@]+$/;
+    return regex.test(email);
+  };
+  
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    if (password.length < 8) {
-      setError("Password must be at least 8 characters long.");
+  
+    if (!validateEmail(email)) {
+      setError('Please enter a valid email address.');
       return;
     }
-
+  
+    if (password.length < 8) {
+      setError('Password must be at least 8 characters long.');
+      return;
+    }
+  
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      // Add username to the user profile or database if needed
-      router.push("/login");
+      router.push('/login');
     } catch (error) {
       console.error(error);
-      setError("Registration failed. Please try again.");
+      setError('Registration failed. Please try again.');
     }
   };
 
