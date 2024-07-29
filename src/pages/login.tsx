@@ -1,35 +1,36 @@
-"use client";
+"use client"; // Bileşenin istemci tarafında çalışacağını belirtir
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from "../../firebase";
-import { onAuthStateChanged } from "firebase/auth";
+import { useState, useEffect } from "react"; // React'tan gerekli modülleri içe aktarıyoruz
+import { useRouter } from "next/navigation"; // Next.js'in yönlendirme fonksiyonunu içe aktarıyoruz
+import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase'den e-posta ve şifre ile giriş yapma fonksiyonunu içe aktarıyoruz
+import { auth } from "../../firebase"; // Firebase kimlik doğrulama nesnesini içe aktarıyoruz
+import { onAuthStateChanged } from "firebase/auth"; // Firebase'den kimlik doğrulama durumunu kontrol eden fonksiyonu içe aktarıyoruz
 
 const Login = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const router = useRouter();
+  const [email, setEmail] = useState(""); // E-posta adresini tutmak için bir state oluşturuyoruz
+  const [password, setPassword] = useState(""); // Şifreyi tutmak için bir state oluşturuyoruz
+  const [error, setError] = useState(""); // Hata mesajını tutmak için bir state oluşturuyoruz
+  const router = useRouter(); // Next.js yönlendirme fonksiyonunu kullanıyoruz
 
   useEffect(() => {
+    // Bileşen yüklendiğinde kullanıcı kimlik doğrulamasını kontrol ediyoruz
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push("/");
+        router.push("/"); // Kullanıcı oturumu varsa ana sayfaya yönlendiriyoruz
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // onAuthStateChanged fonksiyonunu temizliyoruz
   }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
+    e.preventDefault(); // Formun varsayılan submit davranışını engelliyoruz
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.push("/");
+      await signInWithEmailAndPassword(auth, email, password); // Kullanıcıyı e-posta ve şifre ile giriş yaptırıyoruz
+      router.push("/"); // Giriş yaptıktan sonra ana sayfaya yönlendiriyoruz
     } catch (error) {
-      console.error(error);
-      setError("Login failed. Please try again.");
+      console.error(error); // Hata durumunda hatayı konsola yazdırıyoruz
+      setError("Login failed. Please try again."); // Hata mesajını state'e kaydediyoruz
     }
   };
 
@@ -65,7 +66,7 @@ const Login = () => {
                 required
               />
             </div>
-            {error && <div className="alert alert-danger">{error}</div>}
+            {error && <div className="alert alert-danger">{error}</div>} {/* Hata mesajını gösteriyoruz */}
             <button type="submit" className="btn btn-primary w-100">
               Login
             </button>
@@ -87,4 +88,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login; // Bileşeni dışa aktarıyoruz

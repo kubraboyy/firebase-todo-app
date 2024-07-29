@@ -1,33 +1,34 @@
-"use client";
+"use client"; // Bileşenin istemci tarafında çalışacağını belirtir
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-import { signOut } from 'firebase/auth';
-import { auth } from '../../firebase';
-import { onAuthStateChanged } from 'firebase/auth';
+import { useState, useEffect } from 'react'; // React'tan gerekli modülleri içe aktarıyoruz
+import { useRouter } from 'next/navigation'; // Next.js'in yönlendirme fonksiyonunu içe aktarıyoruz
+import { signOut } from 'firebase/auth'; // Firebase'den çıkış yapma fonksiyonunu içe aktarıyoruz
+import { auth } from '../../firebase'; // Firebase kimlik doğrulama nesnesini içe aktarıyoruz
+import { onAuthStateChanged } from 'firebase/auth'; // Firebase'den kimlik doğrulama durumunu kontrol eden fonksiyonu içe aktarıyoruz
 
 const Home = () => {
-  const [user, setUser] = useState<any>(null);
-  const router = useRouter();
+  const [user, setUser] = useState<any>(null); // Kullanıcı durumunu tutmak için bir state oluşturuyoruz
+  const router = useRouter(); // Next.js yönlendirme fonksiyonunu kullanıyoruz
 
   useEffect(() => {
+    // Bileşen yüklendiğinde kullanıcı kimlik doğrulamasını kontrol ediyoruz
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (!user) {
-        router.push('/login');
+        router.push('/login'); // Kullanıcı oturumu yoksa giriş sayfasına yönlendiriyoruz
       } else {
-        setUser(user);
+        setUser(user); // Kullanıcı oturumu varsa kullanıcı bilgisini state'e kaydediyoruz
       }
     });
 
-    return () => unsubscribe();
+    return () => unsubscribe(); // onAuthStateChanged fonksiyonunu temizliyoruz
   }, [router]);
 
   const handleSignOut = async () => {
     try {
-      await signOut(auth);
-      router.push('/register');
+      await signOut(auth); // Kullanıcıyı çıkış yaptırıyoruz
+      router.push('/register'); // Çıkış yaptıktan sonra kayıt sayfasına yönlendiriyoruz
     } catch (error) {
-      console.error('Sign out error:', error);
+      console.error('Sign out error:', error); // Çıkış yapma hatasını konsola yazdırıyoruz
     }
   };
 
@@ -46,4 +47,4 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default Home; // Bileşeni dışa aktarıyoruz
