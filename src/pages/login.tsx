@@ -10,6 +10,7 @@ const Login = () => {
   const [email, setEmail] = useState(""); // E-posta adresini tutmak için bir state oluşturuyoruz
   const [password, setPassword] = useState(""); // Şifreyi tutmak için bir state oluşturuyoruz
   const [error, setError] = useState(""); // Hata mesajını tutmak için bir state oluşturuyoruz
+  const [loading, setLoading] = useState(false); // Yüklenme durumunu tutmak için bir state oluşturuyoruz
   const router = useRouter(); // Next.js yönlendirme fonksiyonunu kullanıyoruz
 
   useEffect(() => {
@@ -20,19 +21,39 @@ const Login = () => {
       }
     });
 
+    // localStorage'dan email ve password bilgilerini alıyoruz
+    const savedEmail = localStorage.getItem('email');
+    const savedPassword = localStorage.getItem('password');
+    if (savedEmail && savedPassword) {
+      setEmail(savedEmail);
+      setPassword(savedPassword);
+    }
+
     return () => unsubscribe(); // onAuthStateChanged fonksiyonunu temizliyoruz
   }, [router]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault(); // Formun varsayılan submit davranışını engelliyoruz
+    setLoading(true); // Yüklenme durumunu başlatıyoruz
     try {
       await signInWithEmailAndPassword(auth, email, password); // Kullanıcıyı e-posta ve şifre ile giriş yaptırıyoruz
       router.push("/"); // Giriş yaptıktan sonra ana sayfaya yönlendiriyoruz
     } catch (error) {
       console.error(error); // Hata durumunda hatayı konsola yazdırıyoruz
       setError("Login failed. Please try again."); // Hata mesajını state'e kaydediyoruz
+      setLoading(false); // Yüklenme durumunu sonlandırıyoruz
     }
   };
+
+  if (loading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center" style={{ height: "100vh" }}>
+        <div className="spinner-border" role="status">
+          <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    ); // Yüklenme durumu
+  }
 
   return (
     <div className="container mt-5">
@@ -40,7 +61,7 @@ const Login = () => {
         <div className="col-md-6">
           <h1 className="text-center">Login</h1>
           <form onSubmit={handleLogin}>
-            <div className="mb-3">
+          <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email address
               </label>
