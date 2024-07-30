@@ -1,27 +1,26 @@
-"use client"; // Bileşenin istemci tarafında çalışacağını belirtir
+"use client";
 
-import { useState, useEffect } from "react"; // React'tan gerekli modülleri içe aktarıyoruz
-import { useRouter } from "next/navigation"; // Next.js'in yönlendirme fonksiyonunu içe aktarıyoruz
-import { signInWithEmailAndPassword } from "firebase/auth"; // Firebase'den e-posta ve şifre ile giriş yapma fonksiyonunu içe aktarıyoruz
-import { auth } from "../../firebase"; // Firebase kimlik doğrulama nesnesini içe aktarıyoruz
-import { onAuthStateChanged } from "firebase/auth"; // Firebase'den kimlik doğrulama durumunu kontrol eden fonksiyonu içe aktarıyoruz
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "../../firebase";
+import { onAuthStateChanged } from "firebase/auth";
 
 const Login = () => {
-  const [email, setEmail] = useState(""); // E-posta adresini tutmak için bir state oluşturuyoruz
-  const [password, setPassword] = useState(""); // Şifreyi tutmak için bir state oluşturuyoruz
-  const [error, setError] = useState(""); // Hata mesajını tutmak için bir state oluşturuyoruz
-  const [loading, setLoading] = useState(false); // Yüklenme durumunu tutmak için bir state oluşturuyoruz
-  const router = useRouter(); // Next.js yönlendirme fonksiyonunu kullanıyoruz
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(false); // "Beni hatırla" durumu için state ekliyoruz
+  const router = useRouter();
 
   useEffect(() => {
-    // Bileşen yüklendiğinde kullanıcı kimlik doğrulamasını kontrol ediyoruz
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        router.push("/"); // Kullanıcı oturumu varsa ana sayfaya yönlendiriyoruz
+        router.push("/");
       }
     });
 
-    // localStorage'dan email ve password bilgilerini alıyoruz
     const savedEmail = localStorage.getItem('email');
     const savedPassword = localStorage.getItem('password');
     if (savedEmail && savedPassword) {
@@ -29,19 +28,30 @@ const Login = () => {
       setPassword(savedPassword);
     }
 
-    return () => unsubscribe(); // onAuthStateChanged fonksiyonunu temizliyoruz
+    return () => unsubscribe();
   }, [router]);
 
+  const handleRememberMe = (e: { target: { checked: boolean | ((prevState: boolean) => boolean); }; }) => {
+    setRememberMe(e.target.checked);
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault(); // Formun varsayılan submit davranışını engelliyoruz
-    setLoading(true); // Yüklenme durumunu başlatıyoruz
+    e.preventDefault();
+    setLoading(true);
     try {
-      await signInWithEmailAndPassword(auth, email, password); // Kullanıcıyı e-posta ve şifre ile giriş yaptırıyoruz
-      router.push("/"); // Giriş yaptıktan sonra ana sayfaya yönlendiriyoruz
+      await signInWithEmailAndPassword(auth, email, password);
+      if (rememberMe) {
+        localStorage.setItem('email', email);
+        localStorage.setItem('password', password);
+      } else {
+        localStorage.removeItem('email');
+        localStorage.removeItem('password');
+      }
+      router.push("/");
     } catch (error) {
-      console.error(error); // Hata durumunda hatayı konsola yazdırıyoruz
-      setError("Login failed. Please try again."); // Hata mesajını state'e kaydediyoruz
-      setLoading(false); // Yüklenme durumunu sonlandırıyoruz
+      console.error(error);
+      setError("Login failed. Please try again.");
+      setLoading(false);
     }
   };
 
@@ -52,7 +62,7 @@ const Login = () => {
           <span className="visually-hidden">Loading...</span>
         </div>
       </div>
-    ); // Yüklenme durumu
+    );
   }
 
   return (
@@ -61,7 +71,7 @@ const Login = () => {
         <div className="col-md-6">
           <h1 className="text-center">Login</h1>
           <form onSubmit={handleLogin}>
-          <div className="mb-3">
+            <div className="mb-3">
               <label htmlFor="email" className="form-label">
                 Email address
               </label>
@@ -87,7 +97,19 @@ const Login = () => {
                 required
               />
             </div>
-            {error && <div className="alert alert-danger">{error}</div>} {/* Hata mesajını gösteriyoruz */}
+            <div className="mb-3 form-check">
+              <input
+                type="checkbox"
+                className="form-check-input"
+                id="rememberMe"
+                checked={rememberMe}
+                onChange={handleRememberMe}
+              />
+              <label className="form-check-label" htmlFor="rememberMe">
+                Beni hatırla
+              </label>
+            </div>
+            {error && <div className="alert alert-danger">{error}</div>}
             <button type="submit" className="btn btn-primary w-100">
               Login
             </button>
@@ -109,4 +131,4 @@ const Login = () => {
   );
 };
 
-export default Login; // Bileşeni dışa aktarıyoruz
+export default Login;
