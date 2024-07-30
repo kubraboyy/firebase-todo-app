@@ -2,6 +2,7 @@
 import { AppProps } from "next/app";
 import PrivateRoute from "../components/PrivateRoute";
 import "bootstrap/dist/css/bootstrap.min.css";
+import "bootstrap-icons/font/bootstrap-icons.css";
 import Head from "next/head"; // Head bileşenini içe aktarıyoruz
 
 function MyApp({ Component, pageProps }: AppProps) {
