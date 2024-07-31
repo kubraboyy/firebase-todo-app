@@ -15,28 +15,23 @@ Firebase: Gerçek zamanlı veritabanı ve kimlik doğrulama için kullanıldı.
 Next.js: React tabanlı framework, sunucu tarafı render ve statik site oluşturma için kullanıldı.
 Bootstrap: Kullanıcı arayüzü bileşenleri ve stil için kullanıldı.
 
-<h1>Kurulum</h1>
-1. Depoyu Klonlayın 
-'''bash
-git clone https://github.com/kullanici-adi/to-do-list-web-app.git
-cd to-do-list-web-app
 
-Bağımlılıkları Yükleyin:
+## Proje Kurulumu
+
+Aşağıdaki adımları izleyerek projeyi kurabilirsiniz:
+
+```bash
+# Depoyu klonlayın
+git clone https://github.com/kullanici-adi/proje-adi.git
+
+# Proje dizinine gidin
+cd proje-adi
+
+# Bağımlılıkları yükleyin
 npm install
 
-Firebase Yapılandırması:
-Firebase projesi oluşturun ve yapılandırma bilgilerini alın.
-.env dosyasına Firebase yapılandırma bilgilerini ekleyin:
-NEXT_PUBLIC_FIREBASE_API_KEY=your_api_key
-NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=your_auth_domain
-NEXT_PUBLIC_FIREBASE_PROJECT_ID=your_project_id
-NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=your_storage_bucket
-NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-NEXT_PUBLIC_FIREBASE_APP_ID=your_app_id
-
-Uygulamayı Başlatın:
+# Uygulamayı başlatın
 npm run dev
-
 Kullanım
 Görev Ekleme: Ana sayfada bulunan formu kullanarak yeni görev ekleyin.
 Görev Tamamlama: Görevin yanındaki tamamla butonuna tıklayarak görevi tamamlayın.
