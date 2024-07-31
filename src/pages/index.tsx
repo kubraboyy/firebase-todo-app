@@ -18,11 +18,16 @@ const Home = () => {
   const router = useRouter();
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
       if (!user) {
         router.push('/login');
       } else {
         setUser(user);
+        // API'den yapılacak işleri ve tamamlanmış işleri al
+        const response = await fetch('/api/todos');
+        const data = await response.json();
+        setTodos(data.todos);
+        setCompletedTodos(data.completedTodos);
       }
     });
 
@@ -40,28 +45,60 @@ const Home = () => {
     }
   };
 
-  const handleAddTodo = () => {
+  const handleAddTodo = async () => {
     if (newTodo.trim() !== '') {
       const newTask = { task: newTodo, date: new Date()};
       if (editIndex !== null) {
         const updatedTodos = todos.map((todo, index) => (index === editIndex ? newTask : todo));
         setTodos(updatedTodos);
         setEditIndex(null);
+        // Redis'te güncelle
+        await fetch('/api/todos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ task: newTask, type: 'add' }),
+        });
       } else {
         setTodos([...todos, newTask]);
+        // Redis'e ekle
+        await fetch('/api/todos', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ task: newTask, type: 'add' }),
+        });
       }
       setNewTodo('');
     }
   };
 
-  const handleDeleteTodo = (index: number) => {
+  const handleDeleteTodo = async (index: number) => {
     const newTodos = todos.filter((_, i) => i !== index);
     setTodos(newTodos);
+    // Redis'ten sil
+    await fetch('/api/todos', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ task: todos[index], type: 'incomplete' }),
+    });
   };
 
-  const handleDeleteCompletedTodo = (index: number) => {
+  const handleDeleteCompletedTodo = async (index: number) => {
     const newCompletedTodos = completedTodos.filter((_, i) => i !== index);
     setCompletedTodos(newCompletedTodos);
+    // Redis'ten sil
+    await fetch('/api/todos', {
+      method: 'DELETE',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ task: completedTodos[index], type: 'complete' }),
+    });
   };
 
   const handleEditTodo = (index: number) => {
@@ -69,10 +106,18 @@ const Home = () => {
     setEditIndex(index);
   };
 
-  const handleCompleteTodo = (index: number) => {
+  const handleCompleteTodo = async (index: number) => {
     const completedTask = todos[index];
     setCompletedTodos([...completedTodos, completedTask]);
     handleDeleteTodo(index);
+    // Redis'e ekle
+    await fetch('/api/todos', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ task: completedTask, type: 'complete' }),
+    });
   };
 
   const filteredTodos = todos.filter(todo => todo.task.toLowerCase().includes(searchTerm.toLowerCase()));
@@ -90,6 +135,12 @@ const Home = () => {
 
   return (
     <div className="container mt-5">
+      <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h1 className="text-center">Hi!</h1>
+          <p className="text-center">Welcome to the app!</p>
+        </div>
+      </div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <a className="navbar-brand" href="#">To Do App</a>
         <div className="collapse navbar-collapse" id="navbarNav">
@@ -103,15 +154,6 @@ const Home = () => {
           </ul>
         </div>
       </nav>
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <h1 className="text-center">Hi!</h1>
-          <p className="text-center">Welcome to the app!</p>
-          <button className="btn btn-danger w-100" onClick={handleSignOut}>
-            Sign Out
-          </button>
-        </div>
-      </div>
       <div className="row mt-5">
         <div className="col-md-12">
           <div className="input-group mb-3">
@@ -146,7 +188,7 @@ const Home = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredTodos.sort((a, b) => b.date.getTime() - a.date.getTime()).map((todo, index) => (
+                  {filteredTodos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((todo, index) => (
                     <tr key={index}>
                       <th scope="row">{index + 1}</th>
                       <td>{todo.task}</td>
@@ -171,7 +213,7 @@ const Home = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {filteredCompletedTodos.sort((a, b) => b.date.getTime() - a.date.getTime()).map((todo, index) => (
+                  {filteredCompletedTodos.sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((todo, index) => (
                     <tr key={index}>
                       <th scope="row">{index + 1}</th>
                       <td>{todo.task}</td>
@@ -184,6 +226,9 @@ const Home = () => {
               </table>
             </div>
           )}
+          <button className="btn btn-danger w-100" onClick={handleSignOut}>
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
