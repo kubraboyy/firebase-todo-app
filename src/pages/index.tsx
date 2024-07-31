@@ -74,7 +74,7 @@ const Home = () => {
     setCompletedTodos([...completedTodos, completedTask]);
     handleDeleteTodo(index);
   };
-
+  
   const filteredTodos = todos.filter(todo => todo.task.toLowerCase().includes(searchTerm.toLowerCase()));
   const filteredCompletedTodos = completedTodos.filter(todo => todo.task.toLowerCase().includes(searchTerm.toLowerCase()));
 
@@ -90,6 +90,13 @@ const Home = () => {
 
   return (
     <div className="container mt-5">
+        <div className="row justify-content-center">
+        <div className="col-md-6">
+          <h1 className="text-center"><h1 className="text-center">Hi!</h1>
+          </h1>
+          <p className="text-center">Welcome to the app!</p>
+        </div>
+      </div>
       <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <a className="navbar-brand" href="#">To Do App</a>
         <div className="collapse navbar-collapse" id="navbarNav">
@@ -103,15 +110,6 @@ const Home = () => {
           </ul>
         </div>
       </nav>
-      <div className="row justify-content-center">
-        <div className="col-md-6">
-          <h1 className="text-center">Hi!</h1>
-          <p className="text-center">Welcome to the app!</p>
-          <button className="btn btn-danger w-100" onClick={handleSignOut}>
-            Sign Out
-          </button>
-        </div>
-      </div>
       <div className="row mt-5">
         <div className="col-md-12">
           <div className="input-group mb-3">
@@ -184,6 +182,9 @@ const Home = () => {
               </table>
             </div>
           )}
+           <button className="btn btn-danger w-100" onClick={handleSignOut}>
+            Sign Out
+          </button>
         </div>
       </div>
     </div>
