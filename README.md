@@ -21,22 +21,18 @@ Bootstrap: Kullanıcı arayüzü bileşenleri ve stil için kullanıldı.
 Aşağıdaki adımları izleyerek projeyi kurabilirsiniz:
 
 ```bash
-# Depoyu klonlayın
+# 1. Depoyu klonlayın
 git clone https://github.com/kullanici-adi/proje-adi.git
 
-# Proje dizinine gidin
+# 2. Proje dizinine gidin
 cd proje-adi
 
-# Bağımlılıkları yükleyin
+# 3. Bağımlılıkları yükleyin
 npm install
 
-# Uygulamayı başlatın
+# 4. Uygulamayı başlatın
 npm run dev
-Kullanım
-Görev Ekleme: Ana sayfada bulunan formu kullanarak yeni görev ekleyin.
-Görev Tamamlama: Görevin yanındaki tamamla butonuna tıklayarak görevi tamamlayın.
-Görev Silme: Görevin yanındaki sil butonuna tıklayarak görevi silin.
-Görevleri Görüntüleme: Tamamlanmamış ve tamamlanmış görevler ayrı tablolarda görüntülenir.
+
 ## Deploy on Vercel
 
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
