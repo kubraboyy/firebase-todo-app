@@ -22,10 +22,10 @@ Aşağıdaki adımları izleyerek projeyi kurabilirsiniz:
 
 ```bash
 # 1. Depoyu klonlayın
-git clone https://github.com/kullanici-adi/proje-adi.git
+git clone https://github.com/kubraboyy/firebase-todo-app.git
 
 # 2. Proje dizinine gidin
-cd proje-adi
+cd firebase-todo-app
 
 # 3. Bağımlılıkları yükleyin
 npm install
